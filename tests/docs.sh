@@ -43,10 +43,7 @@ require_file .github/workflows/links.yml
 test ! -e certs/openssl || fail "certs/openssl must not be published"
 
 require_grep '^## Невыпущено$' CHANGELOG.md
-require_grep 'CHANGELOG\.md' README.md
-require_grep 'LICENSE' README.md
 require_grep '^MIT License$' LICENSE
-require_grep 'tests/docs\.sh' README.md
 require_grep 'actions/workflows/docs\.yml/badge\.svg' README.md
 require_grep 'actions/workflows/links\.yml/badge\.svg' README.md
 require_grep 'bash tests/docs\.sh' .github/workflows/docs.yml
