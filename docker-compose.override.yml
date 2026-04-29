@@ -1,0 +1,36 @@
+services:
+  # Переименуйте этот ключ службы и цель depends_on ниже в имя службы,
+  # которая сейчас публикует порт приложения в базовом Compose-файле.
+  # Пример для Immich: immich-server.
+  immich-server:
+    ports: !reset []
+    expose:
+      - "${BACKEND_PORT:-2283}"
+
+  caddy:
+    image: docker.io/library/caddy:2-alpine
+    restart: always
+    depends_on:
+      - immich-server
+    ports:
+      - "80:80"
+      - "443:443"
+      - "${LEGACY_HTTP_PORT:-2283}:2283"
+    environment:
+      BACKEND_PORT: ${BACKEND_PORT:-2283}
+      BACKEND_SERVICE: ${BACKEND_SERVICE:-app-server}
+      # Локальный CA / ручной TLS: имя каталога certs/live/<CERT_NAME>.
+      # Для Let's Encrypt через автоматический HTTPS Caddy эта переменная не нужна.
+      CERT_NAME: ${CERT_NAME:-app}
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      # Локальный CA / ручной TLS: Caddy читает готовые fullchain.pem и privkey.pem.
+      # Для Let's Encrypt эти маунты не нужны: Caddy хранит ACME-сертификаты в caddy-data.
+      - ./certs/live/${CERT_NAME:-app}/fullchain.pem:/certs/live/${CERT_NAME:-app}/fullchain.pem:ro
+      - ./certs/live/${CERT_NAME:-app}/privkey.pem:/certs/live/${CERT_NAME:-app}/privkey.pem:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  caddy-data:
+  caddy-config:

@@ -1,0 +1,23 @@
+{
+	# Локальный CA / ручной TLS: редиректы описаны ниже явно.
+	# Для Let's Encrypt обычно используют публичное DNS-имя в адресе сайта
+	# и дают Caddy самому управлять HTTPS.
+	auto_https disable_redirects
+}
+
+http://:80 {
+	redir https://{host}{uri} permanent
+}
+
+http://:2283 {
+	redir https://{host}{uri} permanent
+}
+
+:443 {
+	# Локальный CA / ручной TLS: Caddy читает готовые сертификат и ключ.
+	# Для Let's Encrypt эту строку убирают и используют адрес вида https://app.example.com.
+	tls /certs/live/{$CERT_NAME}/fullchain.pem /certs/live/{$CERT_NAME}/privkey.pem
+	encode zstd gzip
+
+	reverse_proxy {$BACKEND_SERVICE}:{$BACKEND_PORT}
+}

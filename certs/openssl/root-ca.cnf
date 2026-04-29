@@ -1,0 +1,20 @@
+# Локальный CA / ручной TLS: самоподписанный корневой сертификат.
+# Для Let's Encrypt через автоматический HTTPS Caddy этот файл не нужен.
+
+[req]
+default_bits = 4096
+default_md = sha256
+distinguished_name = dn
+prompt = no
+x509_extensions = v3_ca
+
+[dn]
+CN = $ENV::LOCAL_CA_CN
+O = $ENV::CERT_ORG
+OU = $ENV::LOCAL_CA_OU
+
+[v3_ca]
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints = critical, CA:true
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign

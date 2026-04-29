@@ -1,0 +1,17 @@
+.codex
+.env
+.env.*
+!.env.example
+
+certs/live/**
+certs/private/**
+certs/ca/private/**
+certs/ca/*.crt
+certs/ca/*.csr
+certs/ca/*.key
+certs/ca/*.pem
+certs/ca/*.srl
+certs/ca/*.old
+
+!certs/live/.gitkeep
+!certs/ca/.gitkeep
