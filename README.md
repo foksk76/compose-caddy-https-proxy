@@ -205,7 +205,7 @@ services:
 
 ## Шаг 4. Положить файлы рядом с Compose
 
-Файлы шаблона должны лежать рядом с основным Compose-файлом приложения.
+Перейдите в каталог, где лежит основной Compose-файл приложения. Файлы шаблона должны лежать рядом с ним.
 
 ```text
 docker-compose.yml
@@ -248,14 +248,26 @@ docker compose config
 
 ## Шаг 6. Запустить или пересоздать Caddy
 
-Запустите только Caddy или пересоздайте его после изменения сертификата, Compose-файла или `Caddyfile`.
+При первой миграции пересоздайте службу приложения, чтобы она освободила старый внешний порт, а затем запустите Caddy.
+
+```bash
+set -a
+. ./.env
+set +a
+
+docker compose up -d --no-deps --force-recreate "$BACKEND_SERVICE"
+docker compose up -d --no-deps --force-recreate caddy
+docker compose ps "$BACKEND_SERVICE" caddy
+```
+
+Если Caddy уже работал и менялся только сертификат, Compose-файл или `Caddyfile`, можно пересоздать только Caddy:
 
 ```bash
 docker compose up -d --no-deps --force-recreate caddy
 docker compose ps caddy
 ```
 
-Если менялся только `caddy/Caddyfile`, можно перезагрузить Caddy без пересоздания контейнера:
+Если менялся только `caddy/Caddyfile`, можно попробовать перезагрузку без пересоздания контейнера:
 
 ```bash
 docker compose exec -T caddy \
