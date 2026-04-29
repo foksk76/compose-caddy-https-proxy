@@ -1,5 +1,8 @@
 # Обратный прокси для Docker Compose
 
+[![Documentation](https://github.com/foksk76/compose-caddy-https-proxy/actions/workflows/docs.yml/badge.svg)](https://github.com/foksk76/compose-caddy-https-proxy/actions/workflows/docs.yml)
+[![Links](https://github.com/foksk76/compose-caddy-https-proxy/actions/workflows/links.yml/badge.svg)](https://github.com/foksk76/compose-caddy-https-proxy/actions/workflows/links.yml)
+
 Этот репозиторий - шаблон для ситуации, когда приложение уже запущено через Docker Compose, но наружу торчит своим HTTP-портом. Цель: поставить перед ним Caddy, принимать трафик на `443`, а обращения на `80` и старый порт приложения уводить на HTTPS.
 
 В качестве примера здесь используется Immich, но шаблон не завязан на него. Для другого приложения поменяйте имя службы, порты, адреса и сертификат.
@@ -27,6 +30,8 @@
 - `certs/live/<CERT_NAME>/fullchain.pem` и `privkey.pem` нужны только для ручного TLS.
 - `.env.example` показывает переменные для своего окружения.
 - `CHANGELOG.md` кратко описывает важные изменения шаблона.
+- `LICENSE` описывает условия использования шаблона.
+- `tests/docs.sh` проверяет документацию и шаблон перед публикацией.
 - `.gitignore` защищает от случайной публикации `.env`, ключей и рабочих сертификатов.
 
 ## Быстрый маршрут
@@ -296,6 +301,16 @@ curl -I "https://$APP_FQDN/"
 ```
 
 Ожидаемо: HTTPS отвечает `200` или другим нормальным кодом приложения, а HTTP-входы возвращают `301` на `https://...`.
+
+## Проверки перед публикацией
+
+Перед публикацией репозитория на GitHub запустите:
+
+```bash
+bash tests/docs.sh
+```
+
+Скрипт проверяет, что README ссылается на существующие шаги, changelog заполнен, старые OpenSSL-шаблоны не вернулись, а `.env`, рабочие сертификаты и закрытые ключи не попадут в публичные файлы. GitHub Actions дополнительно проверяет внешние ссылки в README и changelog через `.github/workflows/links.yml`.
 
 ## Полный пример конфигурации
 
